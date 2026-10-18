@@ -145,6 +145,7 @@ dmypy.json
 /main/xiaoyue-server/music/*
 !/main/xiaoyue-server/music/儿歌/
 !/main/xiaoyue-server/music/儿歌/*.wav
+!/main/xiaoyue-server/music/儿歌/*.mp3
 
 # pytype static type analyzer
 .pytype/
