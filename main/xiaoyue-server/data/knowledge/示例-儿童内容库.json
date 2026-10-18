@@ -1,0 +1,75 @@
+{
+  "items": [
+    {
+      "title": "小星星",
+      "type": "儿歌",
+      "category": "儿歌童谣",
+      "difficulty": "简单",
+      "tags": ["星星", "夜晚", "唱歌"],
+      "content": "一闪一闪亮晶晶，满天都是小星星。挂在天上放光明，好像许多小眼睛。",
+      "pinyin": "yī shǎn yī shǎn liàng jīng jīng，mǎn tiān dōu shì xiǎo xīng xing。",
+      "explanation": "这是一首帮助孩子认识星星和夜晚的儿歌。"
+    },
+    {
+      "title": "静夜思",
+      "type": "儿歌",
+      "category": "古诗",
+      "difficulty": "中等",
+      "tags": ["古诗", "月亮", "思乡"],
+      "content": "床前明月光，疑是地上霜。举头望明月，低头思故乡。",
+      "pinyin": "chuáng qián míng yuè guāng，yí shì dì shàng shuāng。jǔ tóu wàng míng yuè，dī tóu sī gù xiāng。",
+      "explanation": "这是李白的《静夜思》，写的是一个人在夜里看到月光，想念家乡。"
+    },
+    {
+      "title": "小马过河",
+      "type": "故事",
+      "category": "睡前故事",
+      "difficulty": "中等",
+      "tags": ["故事", "勇气", "尝试"],
+      "content": "小马要把半袋麦子送到河对岸。老牛说河水很浅，松鼠说河水很深。小马自己试了试，发现河水既不像老牛说的那么浅，也不像松鼠说的那么深。",
+      "explanation": "这个故事告诉孩子，遇到事情要自己动脑、亲自尝试，不能只听别人说。"
+    },
+    {
+      "title": "认识颜色",
+      "type": "认知",
+      "category": "颜色认知",
+      "difficulty": "简单",
+      "tags": ["颜色", "红色", "黄色", "蓝色", "绿色"],
+      "content": "苹果是红色的，香蕉是黄色的，天空是蓝色的，小草是绿色的。我们一起来找一找身边的颜色吧。"
+    },
+    {
+      "title": "字母 A",
+      "type": "英语",
+      "category": "英语启蒙",
+      "difficulty": "简单",
+      "tags": ["英语", "字母", "apple"],
+      "content": "A is for apple. Apple means 苹果。跟我读：A，apple，苹果。",
+      "explanation": "用孩子熟悉的水果引入字母 A，边读边指苹果，效果更好。"
+    },
+    {
+      "title": "红灯停，绿灯行",
+      "type": "生活常识",
+      "category": "安全知识",
+      "difficulty": "简单",
+      "tags": ["红绿灯", "安全", "过马路"],
+      "content": "过马路时，红灯要停下来，绿灯亮了才能走。还要牵着大人的手，左右看一看。"
+    },
+    {
+      "title": "刷牙歌",
+      "type": "生活常识",
+      "category": "生活习惯",
+      "difficulty": "简单",
+      "tags": ["刷牙", "洗手", "生活习惯"],
+      "content": "小牙刷，手中拿，早晚都要刷刷牙。上面刷刷，下面刷刷，里里外外都干净。"
+    },
+    {
+      "title": "三只小猪",
+      "type": "故事",
+      "category": "睡前故事",
+      "difficulty": "中等",
+      "tags": ["故事", "小猪", "勤劳", "勇敢"],
+      "content": "三只小猪分别用稻草、木头和砖头盖房子。大灰狼吹倒了稻草房和木头房，却吹不倒砖头房。最后三只小猪一起想办法，把大灰狼赶走了。",
+      "explanation": "这个故事告诉孩子，做事要认真、踏实，团结起来更有力量。"
+    }
+  ]
+}
