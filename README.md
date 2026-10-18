@@ -22,10 +22,11 @@
 cd main\xiaoyue-server
 python -m venv .venv
 .\.venv\Scripts\pip.exe install -r requirements.txt
+Copy-Item data\.config.example.yaml data\.config.yaml
 Copy-Item .env.example .env
 ```
 
-在 `.env` 中填写：
+把 `data\.config.yaml` 里的 `你的电脑局域网IP` 改成运行服务端电脑的局域网地址，然后在 `.env` 中填写：
 
 ```text
 DEEPSEEK_API_KEY=你的Key
