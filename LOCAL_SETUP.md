@@ -11,6 +11,7 @@ cd D:\airobot\xiaoyue-server
 
 - OTA 接口：`http://172.20.10.3:8003/xiaoyue/ota/`
 - WebSocket：`ws://172.20.10.3:8000/xiaoyue/v1/`
+- 家长端：`http://172.20.10.3:8003/parent/`
 
 设备和电脑必须在同一个网络（当前是手机热点网段 172.20.10.x）。
 
@@ -25,6 +26,14 @@ DEEPSEEK_API_KEY=你的DeepSeekKey
 ```
 
 首次部署时从 `.env.example` 复制一份 `.env`。角色身份在 `data\.config.yaml` 的 `prompt` 字段，当前已经设置为“小月”。
+
+家长端访问令牌也保存在 `.env`：
+
+```text
+PARENT_CONSOLE_TOKEN=请设置一个足够长的随机令牌
+```
+
+家长端和后端运行在同一个 Python 进程、同一个 `8003` 服务器端口，不需要额外启动前端服务。
 
 ## 使用的模块
 

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#112720">
+  <title>小月家长端</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#overview" aria-label="小月家长端首页">
+        <span class="brand-mark">月</span>
+        <span>
+          <strong>小月家长端</strong>
+          <small>家庭控制台</small>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="家长端导航">
+        <a class="nav-link active" href="#overview">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z"/></svg>
+          概览
+        </a>
+        <a class="nav-link" href="#devices">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H4V5Zm0-2a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h6v2H7v2h10v-2h-3v-2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H4Z"/></svg>
+          设备
+        </a>
+        <a class="nav-link" href="#content">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5V3Zm10 1.5V7h2.5L15 4.5ZM8 11h8V9H8v2Zm0 4h8v-2H8v2Zm0 4h6v-2H8v2Z"/></svg>
+          内容库
+        </a>
+        <a class="nav-link" href="#safety">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5.1 3.4 9.9 8 11 4.6-1.1 8-5.9 8-11V5l-8-3Zm0 4.2 4 1.5v3.5c0 3.2-1.8 6.3-4 7.5-2.2-1.2-4-4.3-4-7.5V7.7l4-1.5Zm-1 4.1v3.4l2.7-1.7L11 10.3Z"/></svg>
+          内容安全
+        </a>
+      </nav>
+
+      <div class="sidebar-status">
+        <span id="sidebarDot" class="status-dot"></span>
+        <div>
+          <strong id="sidebarStatus">连接中</strong>
+          <small>后端服务状态</small>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">家庭管理</p>
+          <h1>小月运行概览</h1>
+          <p class="page-copy">查看设备连接、内容库、模型配置和儿童内容安全状态。</p>
+        </div>
+        <button id="refreshButton" class="button button-secondary" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h7V4l-2.3 2.3Z"/></svg>
+          刷新
+        </button>
+      </header>
+
+      <div id="authBanner" class="notice notice-warning" hidden>
+        家长端尚未设置访问令牌，当前仅适合在可信家庭网络中使用。
+      </div>
+      <div id="errorBanner" class="notice notice-error" hidden></div>
+
+      <section id="overview" class="section-block">
+        <div class="metrics" aria-label="运行指标">
+          <article class="metric">
+            <span>后端状态</span>
+            <strong id="metricServer">--</strong>
+            <small id="metricUptime">等待数据</small>
+          </article>
+          <article class="metric metric-device">
+            <span>在线设备</span>
+            <strong id="metricDevices">--</strong>
+            <small>当前 WebSocket 连接</small>
+          </article>
+          <article class="metric metric-content">
+            <span>知识片段</span>
+            <strong id="metricKnowledge">--</strong>
+            <small id="metricCategories">-- 个分类</small>
+          </article>
+          <article class="metric metric-safety">
+            <span>安全规则</span>
+            <strong id="metricRules">--</strong>
+            <small id="metricRuleCategories">-- 类内容</small>
+          </article>
+        </div>
+      </section>
+
+      <section id="devices" class="content-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">设备连接</p>
+              <h2>在线设备</h2>
+            </div>
+            <span id="deviceBadge" class="badge">0 台</span>
+          </div>
+          <div id="deviceList" class="list-stack">
+            <div class="empty-state">等待设备连接</div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">服务配置</p>
+              <h2>语音链路</h2>
+            </div>
+          </div>
+          <dl id="moduleList" class="detail-list">
+            <div><dt>大模型</dt><dd>--</dd></div>
+            <div><dt>语音识别</dt><dd>--</dd></div>
+            <div><dt>语音合成</dt><dd>--</dd></div>
+            <div><dt>意图模式</dt><dd>--</dd></div>
+          </dl>
+        </article>
+      </section>
+
+      <section id="content" class="panel panel-wide">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">儿童内容</p>
+            <h2>内容库与本地儿歌</h2>
+          </div>
+          <span id="ragBadge" class="badge badge-muted">RAG 未启用</span>
+        </div>
+        <div class="library-grid">
+          <div>
+            <h3>知识库分类</h3>
+            <div id="categoryList" class="tag-list">
+              <span class="empty-inline">暂无分类</span>
+            </div>
+            <h3 class="subheading">内容标题</h3>
+            <div id="knowledgeTitles" class="content-list">
+              <span class="empty-inline">暂无内容</span>
+            </div>
+          </div>
+          <div>
+            <h3>本地儿歌</h3>
+            <p id="musicSummary" class="muted-copy">正在读取曲库...</p>
+            <div id="musicList" class="content-list">
+              <span class="empty-inline">暂无儿歌</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="safety" class="panel panel-wide">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">内容保护</p>
+            <h2>检测一段文字</h2>
+          </div>
+          <span id="filterBadge" class="badge badge-muted">读取中</span>
+        </div>
+        <form id="filterForm" class="filter-form">
+          <label for="filterText">输入儿童可能说出的内容或模型准备输出的文字</label>
+          <textarea id="filterText" maxlength="2000" rows="4" placeholder="例如：我想听小星星"></textarea>
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">开始检测</button>
+            <span class="muted-copy">检测在本地完成，不会调用大模型。</span>
+          </div>
+        </form>
+        <div id="filterResult" class="result-box" hidden></div>
+      </section>
+
+      <footer class="footer">
+        <span>小月家长端 1.0</span>
+        <span id="lastUpdated">尚未刷新</span>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="authDialog" class="auth-dialog">
+    <form id="authForm" method="dialog">
+      <p class="eyebrow">家长验证</p>
+      <h2>输入访问令牌</h2>
+      <p>令牌配置在服务器的 <code>.env</code> 文件中。</p>
+      <label for="tokenInput">家长端令牌</label>
+      <input id="tokenInput" type="password" autocomplete="current-password" required>
+      <div class="form-actions">
+        <button class="button button-primary" type="submit">进入家长端</button>
+      </div>
+      <p id="authError" class="form-error" hidden>令牌无效，请重新输入。</p>
+    </form>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

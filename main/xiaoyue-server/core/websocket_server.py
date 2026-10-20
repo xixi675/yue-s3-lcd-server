@@ -35,6 +35,7 @@ from config.config_loader import get_config_from_api_async
 from core.auth import AuthManager, AuthenticationError
 from core.utils.modules_initialize import initialize_modules
 from core.utils.util import check_vad_update, check_asr_update
+from core.utils.runtime_state import runtime_state
 
 TAG = __name__
 
@@ -127,11 +128,18 @@ class WebSocketServer:
             self._intent,
             self,  # 传入server实例
         )
+        connection_key = str(id(websocket))
+        runtime_state.device_connected(
+            connection_key,
+            str(websocket.request.headers.get("device-id", "")),
+            str(websocket.remote_address),
+        )
         try:
             await handler.handle_connection(websocket)
         except Exception as e:
             self.logger.bind(tag=TAG).error(f"处理连接时出错: {e}")
         finally:
+            runtime_state.device_disconnected(connection_key)
             # 强制关闭连接（如果还没有关闭的话）
             try:
                 # 安全地检查WebSocket状态并关闭

@@ -1,10 +1,13 @@
 import asyncio
+from pathlib import Path
 from aiohttp import web
 from config.logger import setup_logging
 from core.api.ota_handler import OTAHandler
+from core.api.parent_handler import ParentConsoleHandler
 from core.api.vision_handler import VisionHandler
 
 TAG = __name__
+PARENT_WEB_DIR = Path(__file__).resolve().parents[1] / "web" / "parent"
 
 
 class SimpleHttpServer:
@@ -13,6 +16,7 @@ class SimpleHttpServer:
         self.logger = setup_logging()
         self.ota_handler = OTAHandler(config)
         self.vision_handler = VisionHandler(config)
+        self.parent_handler = ParentConsoleHandler(config)
 
     def _get_websocket_url(self, local_ip: str, port: int) -> str:
         """获取websocket地址
@@ -61,6 +65,35 @@ class SimpleHttpServer:
                                 self.ota_handler.handle_options,
                             ),
                         ]
+                    )
+                app.add_routes(
+                    [
+                        web.get(
+                            "/xiaoyue/parent/api/overview",
+                            self.parent_handler.overview,
+                        ),
+                        web.post(
+                            "/xiaoyue/parent/api/check-content",
+                            self.parent_handler.check_content,
+                        ),
+                        web.get(
+                            "/parent",
+                            lambda _: web.HTTPFound("/parent/"),
+                        ),
+                        web.get(
+                            "/parent/",
+                            lambda _: web.FileResponse(
+                                PARENT_WEB_DIR / "index.html"
+                            ),
+                        ),
+                    ]
+                )
+                if PARENT_WEB_DIR.exists():
+                    app.router.add_static(
+                        "/parent/",
+                        PARENT_WEB_DIR,
+                        show_index=True,
+                        follow_symlinks=False,
                     )
                 # 添加路由
                 app.add_routes(
