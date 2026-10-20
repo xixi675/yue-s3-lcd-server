@@ -54,6 +54,7 @@ Intent:
     type: function_call
     functions:
       - play_music
+      - change_role
 
 plugins:
   play_music:
