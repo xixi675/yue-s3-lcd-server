@@ -2,6 +2,9 @@ const state = {
   token: sessionStorage.getItem("xiaoyueParentToken") || "",
   overview: null,
   loading: false,
+  conversationTab: "current",
+  selectedConversationId: null,
+  conversationsLoading: false,
 };
 
 const elements = {
@@ -15,15 +18,20 @@ const elements = {
   metricServer: document.querySelector("#metricServer"),
   metricUptime: document.querySelector("#metricUptime"),
   metricDevices: document.querySelector("#metricDevices"),
-  metricKnowledge: document.querySelector("#metricKnowledge"),
-  metricCategories: document.querySelector("#metricCategories"),
-  metricRules: document.querySelector("#metricRules"),
-  metricRuleCategories: document.querySelector("#metricRuleCategories"),
+  metricModel: document.querySelector("#metricModel"),
+  metricModelName: document.querySelector("#metricModelName"),
   sidebarDot: document.querySelector("#sidebarDot"),
   sidebarStatus: document.querySelector("#sidebarStatus"),
   deviceBadge: document.querySelector("#deviceBadge"),
   deviceList: document.querySelector("#deviceList"),
-  moduleList: document.querySelector("#moduleList"),
+  conversationTitle: document.querySelector("#conversationTitle"),
+  conversationBadge: document.querySelector("#conversationBadge"),
+  conversationLayout: document.querySelector("#conversationLayout"),
+  conversationHistoryPane: document.querySelector("#conversationHistoryPane"),
+  conversationList: document.querySelector("#conversationList"),
+  conversationMeta: document.querySelector("#conversationMeta"),
+  conversationMessages: document.querySelector("#conversationMessages"),
+  conversationTabs: document.querySelectorAll("[data-conversation-tab]"),
   ragBadge: document.querySelector("#ragBadge"),
   categoryList: document.querySelector("#categoryList"),
   knowledgeTitles: document.querySelector("#knowledgeTitles"),
@@ -95,53 +103,167 @@ async function api(path, options = {}) {
 
 function renderDevices(server) {
   elements.metricDevices.textContent = String(server.device_count);
-  elements.deviceBadge.textContent = `${server.device_count} 台`;
+  elements.deviceBadge.textContent =
+    server.device_count > 0
+      ? `${server.device_count} 台在线`
+      : server.known_device_count > 0
+        ? `${server.known_device_count} 台已记录`
+        : "暂无设备";
   elements.sidebarDot.classList.add("online");
   elements.sidebarStatus.textContent = "服务在线";
 
   if (!server.devices.length) {
-    elements.deviceList.innerHTML = '<div class="empty-state">当前没有设备连接</div>';
+    elements.deviceList.innerHTML =
+      '<div class="empty-state">暂无设备记录，设备联网后会显示在这里</div>';
     return;
   }
   elements.deviceList.innerHTML = server.devices
-    .map(
-      (device) => `
+    .map((device) => {
+      const statusLabel =
+        device.status === "online"
+          ? "在线"
+          : device.status === "idle"
+            ? "待机"
+            : "离线";
+      const statusClass = device.online ? "" : " badge-muted";
+      const meta = device.online
+        ? `本次连接 ${formatDuration(device.connected_seconds)}<br>最近在线 ${formatTime(device.last_seen)}`
+        : `最近在线 ${formatTime(device.last_seen)}<br>${formatDuration(device.last_seen_seconds)}前`;
+      return `
         <div class="device-item">
           <div>
             <strong>${escapeHtml(device.device_id)}</strong>
             <small>${escapeHtml(device.peer)}</small>
           </div>
           <div class="device-meta">
-            已连接 ${formatDuration(device.connected_seconds)}<br>
-            自 ${formatTime(device.connected_at)}
+            <span class="badge${statusClass}">${statusLabel}</span><br>
+            ${meta}
           </div>
         </div>
+      `;
+    })
+    .join("");
+}
+
+function renderConversationMessages(conversation) {
+  if (!conversation || !conversation.messages.length) {
+    elements.conversationMessages.innerHTML =
+      '<div class="empty-state">暂无对话内容，唤醒小月并开始聊天后会显示在这里</div>';
+    return;
+  }
+
+  elements.conversationMessages.innerHTML = conversation.messages
+    .map((message) => {
+      const isUser = message.role === "user";
+      return `
+        <article class="message-row ${isUser ? "message-user" : "message-assistant"}">
+          <div class="message-heading">
+            <strong>${isUser ? "孩子" : "小月"}</strong>
+            <time>${formatTime(message.created_at)}</time>
+          </div>
+          <p>${escapeHtml(message.content)}</p>
+        </article>
+      `;
+    })
+    .join("");
+
+  if (conversation.active) {
+    elements.conversationMessages.scrollTop =
+      elements.conversationMessages.scrollHeight;
+  }
+}
+
+function renderConversationList(sessions, selectedId) {
+  if (!sessions.length) {
+    elements.conversationList.innerHTML =
+      '<div class="empty-state compact">暂无历史对话</div>';
+    return;
+  }
+  elements.conversationList.innerHTML = sessions
+    .map(
+      (session) => `
+        <button
+          class="conversation-session${session.id === selectedId ? " active" : ""}"
+          type="button"
+          data-session-id="${escapeHtml(session.id)}"
+        >
+          <span class="conversation-session-top">
+            <strong>${formatTime(session.started_at)}</strong>
+            <small>${session.active ? "进行中" : `${session.message_count} 条`}</small>
+          </span>
+          <span class="conversation-session-preview">${escapeHtml(session.preview || "暂无文字内容")}</span>
+          <small>${escapeHtml(session.device_id || "未知设备")}</small>
+        </button>
       `,
     )
     .join("");
 }
 
+function renderConversations(data) {
+  const isHistory = state.conversationTab === "history";
+  const conversation = isHistory
+    ? data.selected || data.current
+    : data.current;
+  const selectedId = conversation?.id || null;
+
+  elements.conversationTitle.textContent = isHistory ? "历史对话" : "当前对话";
+  elements.conversationLayout.classList.toggle("show-history", isHistory);
+  elements.conversationHistoryPane.hidden = !isHistory;
+
+  if (isHistory) {
+    renderConversationList(data.sessions || [], selectedId);
+  }
+
+  if (!conversation) {
+    elements.conversationBadge.textContent = "暂无记录";
+    elements.conversationBadge.classList.add("badge-muted");
+    elements.conversationMeta.textContent = "还没有可查看的对话";
+    renderConversationMessages(null);
+    return;
+  }
+
+  elements.conversationBadge.textContent = conversation.active
+    ? "进行中"
+    : "最近一次";
+  elements.conversationBadge.classList.toggle(
+    "badge-muted",
+    !conversation.active,
+  );
+  elements.conversationMeta.innerHTML = `
+    <span>${escapeHtml(conversation.device_id || "未知设备")}</span>
+    <span>${formatTime(conversation.started_at)}</span>
+    <span>${conversation.messages.length} 条消息</span>
+  `;
+  renderConversationMessages(conversation);
+}
+
+async function loadConversations() {
+  if (state.conversationsLoading) return;
+  state.conversationsLoading = true;
+  try {
+    const query =
+      state.conversationTab === "history" && state.selectedConversationId
+        ? `?session_id=${encodeURIComponent(state.selectedConversationId)}`
+        : "";
+    const data = await api(`/xiaoyue/parent/api/conversations${query}`);
+    renderConversations(data);
+  } catch (error) {
+    if (error.message !== "unauthorized") {
+      elements.conversationBadge.textContent = "读取失败";
+      elements.conversationBadge.classList.add("badge-muted");
+      elements.conversationMeta.textContent = error.message || "无法读取对话记录";
+    }
+  } finally {
+    state.conversationsLoading = false;
+  }
+}
+
 function renderModules(modules) {
-  const modelLabel = modules.model
-    ? `${modules.llm} · ${modules.model}`
-    : modules.llm || "--";
-  const rows = [
-    ["大模型", modelLabel],
-    ["语音识别", modules.asr || "--"],
-    ["语音合成", modules.tts || "--"],
-    ["意图模式", modules.intent || "--"],
-  ];
-  elements.moduleList.innerHTML = rows
-    .map(
-      ([label, value]) =>
-        `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`,
-    )
-    .join("");
+  elements.metricModel.textContent = modules.llm || "未配置";
+  elements.metricModelName.textContent = modules.model || "未指定模型";
 }
 
 function renderKnowledge(rag) {
-  elements.metricKnowledge.textContent = String(rag.items || 0);
-  elements.metricCategories.textContent = `${rag.categories?.length || 0} 个分类`;
   elements.ragBadge.textContent = rag.enabled ? "RAG 已启用" : "RAG 未启用";
   elements.ragBadge.classList.toggle("badge-muted", !rag.enabled);
 
@@ -179,8 +301,6 @@ function renderMusic(music) {
 }
 
 function renderSafety(safety) {
-  elements.metricRules.textContent = String(safety.rules || 0);
-  elements.metricRuleCategories.textContent = `${safety.categories || 0} 类内容`;
   elements.filterBadge.textContent = safety.enabled ? "过滤已启用" : "过滤已关闭";
   elements.filterBadge.classList.toggle("badge-muted", !safety.enabled);
 }
@@ -214,6 +334,10 @@ async function loadOverview() {
     state.loading = false;
     elements.refreshButton.disabled = false;
   }
+}
+
+async function refreshDashboard() {
+  await Promise.allSettled([loadOverview(), loadConversations()]);
 }
 
 async function checkContent(event) {
@@ -255,8 +379,30 @@ async function checkContent(event) {
   }
 }
 
-elements.refreshButton.addEventListener("click", loadOverview);
+elements.refreshButton.addEventListener("click", refreshDashboard);
 elements.filterForm.addEventListener("submit", checkContent);
+
+elements.conversationTabs.forEach((button) => {
+  button.addEventListener("click", () => {
+    state.conversationTab = button.dataset.conversationTab;
+    if (state.conversationTab === "current") {
+      state.selectedConversationId = null;
+    }
+    elements.conversationTabs.forEach((tab) => {
+      const active = tab === button;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-selected", String(active));
+    });
+    loadConversations();
+  });
+});
+
+elements.conversationList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-session-id]");
+  if (!button) return;
+  state.selectedConversationId = button.dataset.sessionId;
+  loadConversations();
+});
 
 elements.authForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -266,8 +412,11 @@ elements.authForm.addEventListener("submit", (event) => {
   sessionStorage.setItem("xiaoyueParentToken", token);
   elements.authError.hidden = true;
   elements.authDialog.close();
-  loadOverview();
+  refreshDashboard();
 });
 
-loadOverview();
+refreshDashboard();
 setInterval(loadOverview, 30000);
+setInterval(() => {
+  if (!document.hidden) loadConversations();
+}, 8000);

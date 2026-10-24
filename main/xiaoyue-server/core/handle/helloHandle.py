@@ -17,19 +17,47 @@ from core.providers.tools.device_mcp import MCPClient, send_mcp_initialize_messa
 
 TAG = __name__
 
+# ---------------------------------------------------------------------------
+# 小月的唤醒回复，按时间段分组
+# 通用句子任何时间都能用；早上、傍晚、晚上各有专属句子
+# 晚上只用晚上组，语气轻一点，不用通用组里比较兴奋的句子
+# ---------------------------------------------------------------------------
+_GENERAL = [
+    "哎，小月在呢。今天想玩什么呀？",
+    "我在我在，小月来啦。你想听故事还是唱歌呀？",
+    "叮咚，小月上线啦。我们一起玩个小游戏好不好？",
+    "哇，是你在叫我呀。小月陪你玩，想先做什么呢？",
+    "来啦来啦，小月蹦蹦跳跳地来啦。你今天开心吗？",
+    "嘿，小月在这儿。你想认识小动物，还是学小儿歌呀？",
+    "我听到啦，你的声音真好听。想和小月说什么悄悄话呀？",
+]
+_MORNING = [
+    "早上好呀，小月在呢。你吃过早饭了吗？",
+    "太阳公公起床啦，小月也来啦。今天想学点什么呀？",
+]
+_EVENING = [
+    "你好呀，小月来啦。今天在幼儿园开心吗？",
+    "小月在呢。今天有没有学到新本领呀？",
+]
+_NIGHT = [
+    "晚上好呀，小月在呢。我们听个小故事好不好？",
+    "月亮出来啦，小月陪着你。想听睡前故事吗？",
+    "小月在这里。今天辛苦啦，我们轻轻地聊一聊吧。",
+]
+
+WAKEUP_GROUPS = {
+    "morning": _GENERAL + _MORNING,  # 5:00 - 10:59
+    "daytime": _GENERAL,  # 11:00 - 15:59
+    "evening": _GENERAL + _EVENING,  # 16:00 - 18:59
+    "night": _NIGHT,  # 19:00 - 次日 4:59
+}
+
 WAKEUP_CONFIG = {
+    # 单位是秒：播放缓存的回复后，如果这条缓存生成已经超过这么久，
+    # 就在后台重新随机生成一条新的，留给下一次唤醒用
     "refresh_time": 10,
-    "responses": [
-        "我一直都在呢，您请说。",
-        "在的呢，请随时吩咐我。",
-        "来啦来啦，请告诉我吧。",
-        "您请说，我正听着。",
-        "请您讲话，我准备好了。",
-        "请您说出指令吧。",
-        "我认真听着呢，请讲。",
-        "请问您需要什么帮助？",
-        "我在这里，等候您的指令。",
-    ],
+    # 保留这个字段，兼容其他地方可能的引用
+    "responses": _GENERAL + _MORNING + _EVENING + _NIGHT,
 }
 
 # 创建全局的唤醒词配置管理器
@@ -37,6 +65,18 @@ wakeup_words_config = WakeupWordsConfig()
 
 # 用于防止并发调用wakeupWordsResponse的锁
 _wakeup_response_lock = asyncio.Lock()
+
+
+def _get_period() -> str:
+    """按服务器本地时间判断当前时间段"""
+    hour = time.localtime().tm_hour
+    if 5 <= hour < 11:
+        return "morning"
+    if 11 <= hour < 16:
+        return "daytime"
+    if 16 <= hour < 19:
+        return "evening"
+    return "night"
 
 
 async def handleHelloMessage(conn: "ConnectionHandler", msg_json):
@@ -96,13 +136,15 @@ async def checkWakeupWords(conn: "ConnectionHandler", text):
 
     # 获取唤醒词回复配置
     response = wakeup_words_config.get_wakeup_response(voice)
+    current_group = WAKEUP_GROUPS[_get_period()]
+    if not response or response.get("text") not in current_group:
+        # 缓存可能来自旧版本或已经跨时间段，直接生成一条当前时段的新回复
+        await wakeupWordsResponse(conn)
+        response = wakeup_words_config.get_wakeup_response(voice)
+
     if not response or not response.get("file_path"):
-        response = {
-            "voice": "default",
-            "file_path": "config/assets/wakeup_words_short.wav",
-            "time": 0,
-            "text": "我在这里哦！",
-        }
+        conn.logger.bind(tag=TAG).error("生成唤醒词回复失败")
+        return False
 
     # 获取音频数据
     opus_packets = await audio_to_data(response.get("file_path"), use_cache=False)
@@ -135,8 +177,17 @@ async def wakeupWordsResponse(conn: "ConnectionHandler"):
         if not await _wakeup_response_lock.acquire():
             return
 
-        # 从预定义回复列表中随机选择一个回复
-        result = random.choice(WAKEUP_CONFIG["responses"])
+        # 获取当前音色
+        voice = getattr(conn.tts, "voice", "default")
+
+        # 从当前时间段的回复列表中随机选择，并避开上一次缓存的那一句
+        candidates = list(WAKEUP_GROUPS[_get_period()])
+        last_response = wakeup_words_config.get_wakeup_response(voice)
+        if last_response and len(candidates) > 1:
+            last_text = last_response.get("text")
+            if last_text in candidates:
+                candidates.remove(last_text)
+        result = random.choice(candidates)
         if not result or len(result) == 0:
             return
 
@@ -144,9 +195,6 @@ async def wakeupWordsResponse(conn: "ConnectionHandler"):
         tts_result = await asyncio.to_thread(conn.tts.to_tts, result)
         if not tts_result:
             return
-
-        # 获取当前音色
-        voice = getattr(conn.tts, "voice", "default")
 
         # 使用链接的sample_rate
         wav_bytes = opus_datas_to_wav_bytes(tts_result, sample_rate=conn.sample_rate)

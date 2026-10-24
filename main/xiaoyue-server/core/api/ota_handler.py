@@ -11,6 +11,7 @@ from aiohttp import web
 
 from core.auth import AuthManager
 from core.utils.util import get_local_ip, get_vision_url
+from core.utils.runtime_state import runtime_state
 from core.api.base_handler import BaseHandler
 
 TAG = __name__
@@ -166,6 +167,12 @@ class OTAHandler(BaseHandler):
                 self.logger.bind(tag=TAG).info(f"OTA请求ClientID: {client_id}")
             else:
                 raise Exception("OTA请求ClientID为空")
+            peer = (
+                request.headers.get("X-Real-IP")
+                or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+                or str(request.remote or "")
+            )
+            runtime_state.device_seen(device_id, peer)
 
             data_json = {}
             try:

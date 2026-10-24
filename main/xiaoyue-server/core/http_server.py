@@ -72,6 +72,10 @@ class SimpleHttpServer:
                             "/xiaoyue/parent/api/overview",
                             self.parent_handler.overview,
                         ),
+                        web.get(
+                            "/xiaoyue/parent/api/conversations",
+                            self.parent_handler.conversations,
+                        ),
                         web.post(
                             "/xiaoyue/parent/api/check-content",
                             self.parent_handler.check_content,

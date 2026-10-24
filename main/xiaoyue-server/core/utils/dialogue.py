@@ -1,6 +1,6 @@
 import uuid
 import re
-from typing import List, Dict
+from typing import Callable, List, Dict
 from datetime import datetime
 
 
@@ -23,13 +23,19 @@ class Message:
 
 
 class Dialogue:
-    def __init__(self):
+    def __init__(self, on_message: Callable[["Message"], None] | None = None):
         self.dialogue: List[Message] = []
+        self.on_message = on_message
         # 获取当前时间
         self.current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def put(self, message: Message):
         self.dialogue.append(message)
+        if self.on_message is not None:
+            try:
+                self.on_message(message)
+            except Exception:
+                pass
 
     def getMessages(self, m, dialogue):
         if m.tool_calls is not None:

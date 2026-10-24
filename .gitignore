@@ -164,6 +164,8 @@ main/manager-web/node_modules
 .secrets.yaml
 .private_config.yaml
 .env.development
+/main/xiaoyue-server/data/conversations.db
+/main/xiaoyue-server/data/conversations.db-*
 
 # model files
 main/xiaoyue-server/models/

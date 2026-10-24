@@ -31,6 +31,7 @@ from core.handle.reportHandle import report, enqueue_tool_report
 from core.providers.tts.default import DefaultTTS
 from concurrent.futures import ThreadPoolExecutor
 from core.utils.dialogue import Message, Dialogue
+from core.utils.conversation_store import conversation_store
 from core.providers.asr.dto.dto import InterfaceType
 from core.handle.textHandle import handleTextMessage
 from core.providers.tools.unified_tool_handler import UnifiedToolHandler
@@ -163,7 +164,7 @@ class ConnectionHandler:
         self.system_introduced_speakers = set()  # 已在 system 注入过身份的说话人，控制 system 身份只首轮出现
 
         # llm相关变量
-        self.dialogue = Dialogue()
+        self.dialogue = Dialogue(on_message=self._persist_dialogue_message)
 
         # tts相关变量
         self.sentence_id = None
@@ -1052,6 +1053,34 @@ class ConnectionHandler:
         # 更新系统prompt至上下文
         self.dialogue.update_system_message(self.prompt)
 
+    def _persist_dialogue_message(self, message: Message):
+        if message.is_temporary or message.role not in {"user", "assistant"}:
+            return
+        content = str(message.content or "").strip()
+        if not content:
+            return
+
+        if message.role == "user" and content.startswith("{"):
+            try:
+                payload = json.loads(content)
+                if isinstance(payload, dict) and payload.get("content"):
+                    content = str(payload["content"]).strip()
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+        if content.startswith("[系统提示]"):
+            return
+        if content.startswith("请你以") and "时间过得真快" in content:
+            return
+
+        conversation_store.add_message(
+            conversation_id=self.session_id,
+            device_id=self.device_id or "",
+            role=message.role,
+            content=content,
+            message_id=message.uniq_id,
+        )
+
     def chat(self, query, depth=0):
         # 保存当前任务的sentence_id到局部变量，避免被新任务覆盖
         current_sentence_id = None
@@ -1560,6 +1589,7 @@ class ConnectionHandler:
     async def close(self, ws=None):
         """资源清理方法"""
         try:
+            conversation_store.end_conversation(self.session_id)
             # 清理 VAD 连接资源
             if (
                     hasattr(self, "vad")

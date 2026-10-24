@@ -9,6 +9,7 @@ import yaml
 from aiohttp import web
 
 from core.utils.content_filter import check_user_input
+from core.utils.conversation_store import conversation_store
 from core.utils.runtime_state import runtime_state
 
 SERVER_ROOT = Path(__file__).resolve().parents[2]
@@ -141,6 +142,22 @@ class ParentConsoleHandler:
                 "safety": self._filter_summary(),
             }
         )
+
+    async def conversations(self, request: web.Request) -> web.Response:
+        if not self._authorized(request):
+            return self._unauthorized()
+        session_id = request.query.get("session_id", "").strip() or None
+        try:
+            limit = int(request.query.get("limit", "30"))
+        except ValueError:
+            limit = 30
+        result = conversation_store.dashboard(session_id=session_id, limit=limit)
+        if session_id and result["selected"] is None:
+            return web.json_response(
+                {"error": "not_found", "message": "对话记录不存在"},
+                status=404,
+            )
+        return web.json_response(result)
 
     async def check_content(self, request: web.Request) -> web.Response:
         if not self._authorized(request):
