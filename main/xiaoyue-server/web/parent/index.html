@@ -57,26 +57,27 @@
 
     <main class="main">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">家庭管理</p>
-          <h1>小月运行概览</h1>
-          <p class="page-copy">查看设备连接、对话记录、内容库、模型配置和儿童内容安全状态。</p>
+        <div class="topbar-content">
+          <h1 id="overviewTitle">小月在线，等待设备联网</h1>
+          <p id="overviewDescription" class="page-copy">设备联网后，对话记录和内容安全状态会显示在这里。</p>
+          <button id="refreshButton" class="button button-secondary" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h7V4l-2.3 2.3Z"/></svg>
+            刷新状态
+          </button>
         </div>
         <div class="sky-visual" aria-hidden="true">
-          <svg viewBox="0 0 180 100">
-            <path class="sky-moon" d="M113 8a37 37 0 1 0 21 67 33 33 0 1 1-21-67Z"/>
-            <path class="sky-star" d="m43 21 2.5 6.5L52 30l-6.5 2.5L43 39l-2.5-6.5L34 30l6.5-2.5Z"/>
-            <path class="sky-star small" d="m137 67 1.8 4.7 4.7 1.8-4.7 1.8-1.8 4.7-1.8-4.7-4.7-1.8 4.7-1.8Z"/>
-            <circle class="sky-dot" cx="23" cy="70" r="2"/>
-            <circle class="sky-dot" cx="78" cy="14" r="1.7"/>
-            <circle class="sky-dot" cx="158" cy="31" r="2.1"/>
-            <circle class="sky-dot" cx="99" cy="84" r="1.4"/>
+          <svg viewBox="0 0 260 160">
+            <circle class="sky-moon-glow" cx="176" cy="78" r="61"/>
+            <circle class="sky-moon" cx="176" cy="78" r="49"/>
+            <circle class="sky-eclipse" cx="191" cy="73" r="48"/>
+            <path class="sky-star" d="m76 47 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/>
+            <path class="sky-star small" d="m224 112 2.2 5.8 5.8 2.2-5.8 2.2-2.2 5.8-2.2-5.8-5.8-2.2 5.8-2.2Z"/>
+            <circle class="sky-dot" cx="91" cy="116" r="2"/>
+            <circle class="sky-dot" cx="219" cy="27" r="1.8"/>
+            <circle class="sky-dot" cx="35" cy="80" r="1.7"/>
+            <circle class="sky-dot" cx="152" cy="23" r="1.5"/>
           </svg>
         </div>
-        <button id="refreshButton" class="button button-secondary" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h7V4l-2.3 2.3Z"/></svg>
-          刷新
-        </button>
       </header>
 
       <div id="authBanner" class="notice notice-warning" hidden>

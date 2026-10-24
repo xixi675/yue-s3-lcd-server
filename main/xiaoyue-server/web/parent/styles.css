@@ -1,24 +1,24 @@
 :root {
-  --bg: #fff7d1;
-  --surface: #fffdf4;
-  --sidebar: #17234b;
-  --sidebar-deep: #101936;
-  --sidebar-muted: #bac6e7;
-  --ink: #202b4c;
-  --muted: #747b8d;
-  --line: #eadba4;
-  --accent: #c88900;
-  --accent-strong: #9f6800;
-  --accent-soft: #fff0ad;
-  --sky: #1c2c5d;
-  --sky-soft: #e9efff;
+  --bg: #f1f2fb;
+  --surface: #ffffff;
+  --sidebar: #111a35;
+  --sidebar-deep: #111a35;
+  --sidebar-muted: #c3c6d2;
+  --ink: #17213e;
+  --muted: #777c8e;
+  --line: #e2e4ee;
+  --accent: #d7ab00;
+  --accent-strong: #ad8400;
+  --accent-soft: #fff2b8;
+  --sky: #111a35;
+  --sky-soft: #f1f3ff;
   --coral: #c66743;
   --coral-soft: #fbece3;
   --amber: #a56d00;
   --amber-soft: #fff3c5;
   --danger: #a33e36;
   --danger-soft: #fbe9e6;
-  --shadow: 0 12px 30px rgba(94, 71, 12, 0.09);
+  --shadow: 0 14px 34px rgba(28, 37, 73, 0.08);
 }
 
 * {
@@ -31,12 +31,7 @@ html {
 
 body {
   margin: 0;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(circle, rgba(169, 115, 0, 0.16) 0 1.4px, transparent 1.8px),
-    radial-gradient(circle, rgba(28, 44, 93, 0.1) 0 1px, transparent 1.4px);
-  background-position: 18px 28px, 72px 94px;
-  background-size: 138px 138px, 206px 206px;
+  background: var(--bg);
   color: var(--ink);
   font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
   font-size: 14px;
@@ -59,19 +54,13 @@ svg {
 .app-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 236px minmax(0, 1fr);
+  grid-template-columns: 252px minmax(0, 1fr);
 }
 
 .sidebar {
-  color: #fff9df;
-  background-color: var(--sidebar);
-  background-image:
-    radial-gradient(circle at 22% 12%, rgba(255, 248, 196, 0.9) 0 1.2px, transparent 1.8px),
-    radial-gradient(circle at 72% 28%, rgba(255, 248, 196, 0.55) 0 1px, transparent 1.6px),
-    radial-gradient(circle at 34% 72%, rgba(255, 248, 196, 0.48) 0 1.3px, transparent 1.9px),
-    linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-deep) 100%);
-  background-size: 94px 108px, 132px 146px, 172px 190px, 100% 100%;
-  border-right: 1px solid #31447a;
+  color: #f8f9ff;
+  background: var(--sidebar);
+  border-right: 1px solid #222b48;
   padding: 28px 20px 22px;
   display: flex;
   flex-direction: column;
@@ -97,8 +86,8 @@ svg {
   display: grid;
   place-items: center;
   color: var(--sidebar-deep);
-  background: #ffd95e;
-  box-shadow: 0 5px 16px rgba(255, 211, 65, 0.2);
+  background: #ffe078;
+  box-shadow: 0 5px 16px rgba(255, 211, 65, 0.14);
 }
 
 .brand-mark svg {
@@ -144,15 +133,15 @@ svg {
 
 .nav-link:hover,
 .nav-link:focus-visible {
-  color: #fff8dc;
-  background: rgba(255, 217, 94, 0.1);
+  color: #ffffff;
+  background: #202a48;
   outline: none;
 }
 
 .nav-link.active {
-  color: #1a2851;
-  background: #ffd95e;
-  box-shadow: 0 5px 16px rgba(255, 211, 65, 0.16);
+  color: #fffbed;
+  background: #3b392f;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .sidebar-status {
@@ -161,7 +150,7 @@ svg {
   align-items: center;
   gap: 10px;
   padding: 14px 12px;
-  border-top: 1px solid rgba(255, 235, 158, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-status strong,
@@ -195,56 +184,57 @@ svg {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 30px 34px 24px;
+  padding: 34px 42px 28px;
 }
 
 .topbar {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 150px auto;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
   align-items: center;
-  gap: 18px;
-  padding: 24px 26px;
-  margin-bottom: 24px;
+  gap: 24px;
+  min-height: 184px;
+  padding: 28px 34px;
+  margin-bottom: 20px;
   overflow: hidden;
-  color: #fff9dd;
-  background-color: #182752;
+  color: #f8f9ff;
+  background-color: #111a35;
   background-image:
-    radial-gradient(circle at 76% 24%, rgba(255, 249, 210, 0.75) 0 1.2px, transparent 1.8px),
-    radial-gradient(circle at 89% 72%, rgba(255, 249, 210, 0.48) 0 1px, transparent 1.6px),
-    radial-gradient(circle at 55% 82%, rgba(255, 249, 210, 0.38) 0 1.2px, transparent 1.8px);
-  background-size: 118px 94px, 162px 136px, 194px 172px;
-  border: 1px solid #344b85;
-  border-radius: 8px;
-  box-shadow: 0 16px 34px rgba(20, 32, 73, 0.18);
+    radial-gradient(circle at 74% 18%, rgba(255, 247, 196, 0.72) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 87% 78%, rgba(255, 247, 196, 0.45) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 56% 72%, rgba(255, 247, 196, 0.35) 0 1.1px, transparent 1.7px);
+  background-size: 128px 104px, 174px 148px, 210px 190px;
+  border-radius: 22px;
+  box-shadow: 0 18px 38px rgba(17, 26, 53, 0.16);
 }
 
-.topbar::after {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  content: "";
-  background: #ffd95e;
-}
-
-.topbar .eyebrow {
-  color: #ffdc68;
+.topbar-content {
+  position: relative;
+  z-index: 1;
 }
 
 .topbar h1 {
-  color: #fffbed;
+  margin-bottom: 10px;
+  color: #ffffff;
+  font-family: "STSong", "Songti SC", "SimSun", serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.24;
+  letter-spacing: 0.01em;
 }
 
 .topbar .page-copy {
-  color: #d4dcf3;
+  max-width: 760px;
+  margin-bottom: 0;
+  color: #cfd4e4;
+  font-size: 14px;
+  line-height: 1.65;
 }
 
 .sky-visual {
-  width: 150px;
-  height: 88px;
-  color: #fff3b0;
+  width: 236px;
+  height: 138px;
+  color: #fff0a3;
 }
 
 .sky-visual svg {
@@ -253,13 +243,21 @@ svg {
   overflow: visible;
 }
 
+.sky-moon-glow {
+  fill: #ffd85d;
+  opacity: 0.1;
+}
+
 .sky-moon {
-  fill: #ffda62;
-  filter: drop-shadow(0 0 12px rgba(255, 218, 98, 0.26));
+  fill: #ffd85d;
+}
+
+.sky-eclipse {
+  fill: #111a35;
 }
 
 .sky-star {
-  fill: #fff1a8;
+  fill: #ffec90;
 }
 
 .sky-star.small {
@@ -315,7 +313,7 @@ h3 {
 
 .button {
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 10px;
   min-height: 38px;
   padding: 8px 14px;
   display: inline-flex;
@@ -348,13 +346,18 @@ h3 {
 }
 
 .topbar .button-secondary {
-  color: #fff4be;
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 229, 130, 0.34);
+  min-height: 38px;
+  margin-top: 17px;
+  padding: 7px 14px;
+  color: #ffe889;
+  background: transparent;
+  border: 1px solid #e5bd35;
+  border-radius: 9px;
+  font-size: 13px;
 }
 
 .topbar .button-secondary:hover {
-  color: #17234b;
+  color: #111a35;
   background: #ffd95e;
   border-color: #ffd95e;
 }
@@ -398,28 +401,26 @@ h3 {
 .metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.metric {
-  background:
-    radial-gradient(circle at 90% 12%, rgba(255, 218, 95, 0.2) 0 2px, transparent 2.5px),
-    var(--surface);
-  border: 1px solid #eadb9f;
-  border-left: 4px solid #e1a900;
-  border-radius: 8px;
-  padding: 15px 16px;
-  min-height: 112px;
+  gap: 0;
+  margin-bottom: 20px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
   box-shadow: var(--shadow);
 }
 
-.metric-device {
-  border-left-color: #4e69a8;
+.metric {
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  padding: 25px 30px;
+  min-height: 132px;
 }
 
-.metric-model {
-  border-left-color: #e0a300;
+.metric:first-child {
+  border-left: 0;
 }
 
 .metric span,
@@ -429,27 +430,42 @@ h3 {
 
 .metric span {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .metric strong {
   display: block;
-  margin: 7px 0 2px;
+  margin: 6px 0 3px;
   color: #1d2850;
-  font-size: 26px;
+  font-size: 30px;
   line-height: 1.2;
 }
 
+.metric:first-child strong {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.metric:first-child strong::before {
+  width: 15px;
+  height: 15px;
+  content: "";
+  background: #4cc786;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(76, 199, 134, 0.12);
+}
+
 .metric strong.metric-compact {
-  margin-top: 10px;
-  font-size: 18px;
+  margin-top: 7px;
+  font-size: 26px;
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
 
 .metric small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .content-grid {
@@ -461,14 +477,14 @@ h3 {
 
 .panel {
   background: var(--surface);
-  border: 1px solid #eadba5;
-  border-radius: 8px;
-  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
   box-shadow: var(--shadow);
 }
 
 .panel-wide {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .panel-header {
@@ -479,13 +495,17 @@ h3 {
   margin-bottom: 18px;
 }
 
+.panel .eyebrow {
+  display: none;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
   min-height: 26px;
   padding: 3px 9px;
   border-radius: 999px;
-  color: #745000;
+  color: #5e4c00;
   background: var(--accent-soft);
   font-size: 11px;
   font-weight: 800;
@@ -493,8 +513,8 @@ h3 {
 }
 
 .badge-muted {
-  color: #696d7f;
-  background: #f1eddf;
+  color: #6d7283;
+  background: #f0f1f7;
 }
 
 .badge-blocked {
@@ -551,18 +571,18 @@ h3 {
   display: inline-flex;
   gap: 3px;
   padding: 3px;
-  background: #f5edd0;
-  border: 1px solid #eadba8;
-  border-radius: 6px;
+  background: #f1f2fa;
+  border: 0;
+  border-radius: 10px;
 }
 
 .segment-button {
-  min-height: 32px;
-  padding: 5px 11px;
+  min-height: 38px;
+  padding: 7px 16px;
   color: var(--muted);
   background: transparent;
   border: 0;
-  border-radius: 4px;
+  border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -572,9 +592,9 @@ h3 {
 }
 
 .segment-button.active {
-  color: #1c2850;
-  background: #ffd95e;
-  box-shadow: 0 2px 7px rgba(143, 101, 0, 0.15);
+  color: #ffffff;
+  background: #111a35;
+  box-shadow: 0 3px 8px rgba(17, 26, 53, 0.16);
 }
 
 .segment-button:focus-visible {
@@ -620,12 +640,12 @@ h3 {
 }
 
 .conversation-session:hover {
-  background: #fff8de;
+  background: #f5f6fb;
 }
 
 .conversation-session.active {
   background: var(--accent-soft);
-  border-color: #e7c85f;
+  border-color: #edd67c;
 }
 
 .conversation-session:focus-visible {
@@ -688,14 +708,14 @@ h3 {
 .message-row {
   min-width: 0;
   padding: 10px 12px;
-  border-left: 3px solid #dfa400;
+  border-left: 3px solid #e4b916;
   border-radius: 6px;
   background: #fff8dc;
 }
 
 .message-user {
-  border-left-color: #4d6ca9;
-  background: #f2f6ff;
+  border-left-color: #4e69a8;
+  background: #f2f4fd;
 }
 
 .message-heading {
@@ -730,10 +750,10 @@ h3 {
   min-height: 116px;
   display: grid;
   place-items: center;
-  color: #74776f;
-  background: #fff9e1;
-  border: 1px dashed #e4ce83;
-  border-radius: 6px;
+  color: #6f7485;
+  background: #f5f6fc;
+  border: 0;
+  border-radius: 12px;
 }
 
 .detail-list {
@@ -793,8 +813,8 @@ h3 {
   align-items: center;
   padding: 5px 9px;
   border-radius: 6px;
-  color: #5e4a0b;
-  background: #fff2ba;
+  color: #554800;
+  background: #fff0a8;
   font-size: 12px;
 }
 
@@ -849,9 +869,9 @@ textarea,
 input {
   width: 100%;
   color: var(--ink);
-  background: #fffdf5;
-  border: 1px solid #ddcd97;
-  border-radius: 6px;
+  background: #fafbff;
+  border: 1px solid #dfe2ef;
+  border-radius: 10px;
   padding: 10px 12px;
 }
 
@@ -979,17 +999,24 @@ input:focus {
   }
 
   .topbar {
-    grid-template-columns: minmax(0, 1fr) 112px auto;
-    padding: 21px 22px;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    min-height: 170px;
+    padding: 24px 26px;
   }
 
   .sky-visual {
-    width: 112px;
-    height: 70px;
+    width: 168px;
+    height: 102px;
   }
 
   .metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metric:nth-child(3) {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--line);
+    border-left: 0;
   }
 
   .content-grid,
@@ -1028,13 +1055,31 @@ input:focus {
   }
 
   .topbar {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
-    padding: 20px;
+    min-height: 0;
+    padding: 16px 18px;
   }
 
   .topbar .button {
     align-self: flex-start;
+  }
+
+  .topbar h1 {
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .topbar .page-copy {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .topbar .button-secondary {
+    min-height: 34px;
+    margin-top: 13px;
+    padding: 6px 11px;
+    font-size: 12px;
   }
 
   .sky-visual {
@@ -1051,6 +1096,16 @@ input:focus {
 
   .metric {
     min-height: 96px;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .metric:first-child {
+    border-top: 0;
+  }
+
+  .metric:nth-child(3) {
+    border-top: 1px solid var(--line);
   }
 
   .content-list {

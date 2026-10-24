@@ -15,6 +15,8 @@ const elements = {
   authForm: document.querySelector("#authForm"),
   tokenInput: document.querySelector("#tokenInput"),
   authError: document.querySelector("#authError"),
+  overviewTitle: document.querySelector("#overviewTitle"),
+  overviewDescription: document.querySelector("#overviewDescription"),
   metricServer: document.querySelector("#metricServer"),
   metricUptime: document.querySelector("#metricUptime"),
   metricDevices: document.querySelector("#metricDevices"),
@@ -102,6 +104,21 @@ async function api(path, options = {}) {
 }
 
 function renderDevices(server) {
+  const onlineCount = Number(server.device_count || 0);
+  const knownCount = Number(server.known_device_count || 0);
+  elements.overviewTitle.textContent =
+    onlineCount > 0
+      ? `小月在线，${onlineCount} 台设备正在连接`
+      : knownCount > 0
+        ? "小月在线，设备暂时离线"
+        : "小月在线，等待设备联网";
+  elements.overviewDescription.textContent =
+    onlineCount > 0
+      ? `后端已运行 ${formatDuration(server.uptime_seconds)}，当前设备连接正常，可以继续语音对话。`
+      : knownCount > 0
+        ? `后端已运行 ${formatDuration(server.uptime_seconds)}，设备目前处于待机或离线状态。`
+        : `后端已运行 ${formatDuration(server.uptime_seconds)}。设备联网后，对话记录和内容安全状态会显示在这里。`;
+
   elements.metricDevices.textContent = String(server.device_count);
   elements.deviceBadge.textContent =
     server.device_count > 0
@@ -206,7 +223,7 @@ function renderConversations(data) {
     : data.current;
   const selectedId = conversation?.id || null;
 
-  elements.conversationTitle.textContent = isHistory ? "历史对话" : "当前对话";
+  elements.conversationTitle.textContent = "对话记录";
   elements.conversationLayout.classList.toggle("show-history", isHistory);
   elements.conversationHistoryPane.hidden = !isHistory;
 
